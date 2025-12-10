@@ -1,12 +1,11 @@
 package org.example;
 
-import jakarta.persistence.*; 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "transactions") // <--- ESTA LÍNEA ES LA CLAVE (en plural)
+@Table(name = "transactions") // <--- ESTA ES LA LÍNEA MÁGICA QUE FALTA
 public class Transaction {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
