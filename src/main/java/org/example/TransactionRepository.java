@@ -14,11 +14,13 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+// OJO AQUÍ: Agregamos la propiedad 'ddl-auto=create-drop'
 @DataJpaTest(properties = "spring.jpa.hibernate.ddl-auto=create-drop")
 @Testcontainers
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class TransactionRepositoryTest {
-
+    
+    // ... el resto del código déjalo igual ...
     @Container
     @ServiceConnection
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15");
@@ -28,20 +30,15 @@ class TransactionRepositoryTest {
 
     @Test
     void shouldFindTransactionsWithinDateRange() {
-        // 1. ARRANGE
+        // ... tu test ...
         LocalDateTime now = LocalDateTime.now();
-        
-        Transaction t1 = new Transaction(100.0, now);
-        Transaction t2 = new Transaction(200.0, now.minusDays(5));
-        Transaction t3 = new Transaction(300.0, now.plusHours(1));
+        repository.saveAll(List.of(
+            new Transaction(100.0, now),
+            new Transaction(200.0, now.minusDays(5)),
+            new Transaction(300.0, now.plusHours(1))
+        ));
 
-        repository.saveAll(List.of(t1, t2, t3));
-
-        List<Transaction> results = repository.findByDateBetween(
-            now.minusDays(1), 
-            now.plusDays(1)
-        );
-
+        List<Transaction> results = repository.findByDateBetween(now.minusDays(1), now.plusDays(1));
         assertThat(results).hasSize(2);
     }
 }
