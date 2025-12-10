@@ -14,8 +14,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-// AGREGAMOS (properties = ...) PARA OBLIGAR A CREAR LA TABLA
-@DataJpaTest(properties = "spring.jpa.hibernate.ddl-auto=create-drop") 
+@DataJpaTest(properties = "spring.jpa.hibernate.ddl-auto=create-drop")
 @Testcontainers
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class TransactionRepositoryTest {
@@ -29,4 +28,20 @@ class TransactionRepositoryTest {
 
     @Test
     void shouldFindTransactionsWithinDateRange() {
-        // ... (El resto del código déjalo igual)
+        // 1. ARRANGE
+        LocalDateTime now = LocalDateTime.now();
+        
+        Transaction t1 = new Transaction(100.0, now);
+        Transaction t2 = new Transaction(200.0, now.minusDays(5));
+        Transaction t3 = new Transaction(300.0, now.plusHours(1));
+
+        repository.saveAll(List.of(t1, t2, t3));
+
+        List<Transaction> results = repository.findByDateBetween(
+            now.minusDays(1), 
+            now.plusDays(1)
+        );
+
+        assertThat(results).hasSize(2);
+    }
+}
