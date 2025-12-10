@@ -14,37 +14,31 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
-@Testcontainers // 1. Activa Testcontainers
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // 2. Le dice a Spring: "No uses H2, usa el contenedor que te doy abajo"
-class TransactionRepositoryTest {
+@DataJpaTest(properties = "spring.jpa.hibernate.ddl-auto=create-drop")
+@Testcontainers
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+class PaymentRepositoryTest {
 
-    // 3. Define el contenedor de Postgres (Esto se descargará solo en GitHub Codespaces)
     @Container
     @ServiceConnection
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15");
 
     @Autowired
-    TransactionRepository repository;
+    PaymentRepository repository;
 
     @Test
-    void shouldFindTransactionsWithinDateRange() {
-        // ARRANGE: Preparamos datos
+    void shouldFindPaymentsWithinDateRange() {
         LocalDateTime now = LocalDateTime.now();
 
-        Transaction t1 = new Transaction(100.0, now);
-        Transaction t2 = new Transaction(200.0, now.minusDays(5)); // Fuera de fecha
-        Transaction t3 = new Transaction(300.0, now.plusHours(1));
+        repository.save(new Payment(100.0, now));
+        repository.save(new Payment(200.0, now.minusDays(5)));
+        repository.save(new Payment(300.0, now.plusHours(1)));
 
-        repository.saveAll(List.of(t1, t2, t3));
-
-        // ACT: Ejecutamos la búsqueda
-        List<Transaction> results = repository.findByDateBetween(
-                now.minusDays(1),
-                now.plusDays(1)
+        List<Payment> results = repository.findByDateBetween(
+            now.minusDays(1), 
+            now.plusDays(1)
         );
 
-        // ASSERT: Verificamos
-        assertThat(results).hasSize(2); // Solo t1 y t3 deberían salir
+        assertThat(results).hasSize(2);
     }
 }
