@@ -4,8 +4,9 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "transactions") 
+@Table(name = "transactions") // <--- ESTA LÍNEA ES LA CLAVE (en plural)
 public class Transaction {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
