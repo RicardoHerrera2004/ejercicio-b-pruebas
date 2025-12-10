@@ -29,7 +29,7 @@ class PaymentRepositoryTest {
     @Test
     void shouldFindPaymentsWithinDateRange() {
         LocalDateTime now = LocalDateTime.now();
-
+        
         repository.save(new Payment(100.0, now));
         repository.save(new Payment(200.0, now.minusDays(5)));
         repository.save(new Payment(300.0, now.plusHours(1)));
