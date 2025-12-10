@@ -1,10 +1,32 @@
 package org.example;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface TransactionRepository extends JpaRepository<Transaction, Long> {
-    // Spring Data JPA crea la query SQL automáticamente basándose en el nombre
-    List<Transaction> findByDateBetween(LocalDateTime start, LocalDateTime end);
-}
+import static org.assertj.core.api.Assertions.assertThat;
+
+// AGREGAMOS (properties = ...) PARA OBLIGAR A CREAR LA TABLA
+@DataJpaTest(properties = "spring.jpa.hibernate.ddl-auto=create-drop") 
+@Testcontainers
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+class TransactionRepositoryTest {
+
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15");
+
+    @Autowired
+    TransactionRepository repository;
+
+    @Test
+    void shouldFindTransactionsWithinDateRange() {
+        // ... (El resto del código déjalo igual)
