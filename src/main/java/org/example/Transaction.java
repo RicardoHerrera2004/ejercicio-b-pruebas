@@ -4,15 +4,15 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "transactions") 
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
     private Double amount;
     private LocalDateTime date;
 
-    // Constructor vacío obligatorio para JPA
     public Transaction() {}
 
     public Transaction(Double amount, LocalDateTime date) {
@@ -20,7 +20,6 @@ public class Transaction {
         this.date = date;
     }
 
-    // Getters
     public Double getAmount() { return amount; }
     public LocalDateTime getDate() { return date; }
 }
